@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loop Kitchen MVP - Editorial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&display=swap" rel="stylesheet">
+    <!-- Iconos Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="bg-art bg-art-1">L</div>
+    <div class="bg-art bg-art-2">O</div>
+
+    <div id="app-container">
+        <header class="app-header">
+            <h1 id="header-title">LoopKitchen®</h1>
+        </header>
+
+        <main id="main-content">
+            
+            <!-- VISTA: DASHBOARD (INICIO) -->
+            <section id="view-dashboard" class="view active">
+                <div class="hero-section">
+                    <h2>Hola.</h2>
+                    <p class="hero-sub" id="dashboard-date">Cargando...</p>
+                </div>
+                
+                <!-- Estado: Semana sin empezar -->
+                <div id="dashboard-empty" class="dashboard-state" style="display: none;">
+                    <div class="empty-state-box">
+                        <h3>Tu semana está vacía.</h3>
+                        <p>Planifica tus comidas para organizar tus compras y aprovechar al máximo tu despensa.</p>
+                        <button class="btn-massive" onclick="navigateTo('view-planner')">Empezar mi semana <i class="ph ph-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Estado: Semana activa (Muestra las comidas de hoy) -->
+                <div id="dashboard-active" class="dashboard-state" style="display: none;">
+                    <div class="section-title-bar">
+                        <span>Menú para Hoy</span>
+                        <i class="ph ph-calendar-star"></i>
+                    </div>
+                    <div id="dashboard-today-meals">
+                        <!-- Llenado por JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA: PLANNER (PLANIFICADOR) -->
+            <section id="view-planner" class="view">
+                <div class="hero-section hero-lime">
+                    <h2>Plan<br>Semanal</h2>
+                    <p class="hero-sub" style="color:var(--color-dark)">Organiza tus días.</p>
+                </div>
+                
+                <div class="planner-days" id="planner-days-container">
+                    <!-- Generado por JS (Lunes a Domingo) -->
+                </div>
+                
+                <div style="padding: 30px 20px; padding-bottom: 50px;">
+                    <button class="btn-massive" onclick="resetWeek()" style="background-color: transparent; border: var(--border-main); color: #FF5A5A; font-size: 1rem;">↺ Iniciar Nueva Semana</button>
+                    <p style="text-align:center; font-size: 0.8rem; margin-top: 10px; color: rgba(19,36,17,0.6);">Esto limpiará el plan pero conservará tu despensa actual.</p>
+                </div>
+            </section>
+
+            <!-- VISTA: RECETARIO (CATÁLOGO) -->
+            <section id="view-recipes" class="view">
+                <div class="section-title-bar">
+                    <span>Catálogo de Recetas</span>
+                    <button class="btn-text-action" onclick="surpriseMe()" style="color:var(--color-lime); background:var(--color-dark); padding: 5px 10px; border-radius: 20px;"><i class="ph ph-sparkle"></i> Sorpréndeme</button>
+                </div>
+                <div class="recipe-filters">
+                    <button class="filter-pill active" onclick="setRecipeFilter('Todo')">Todo</button>
+                    <button class="filter-pill" onclick="setRecipeFilter('Rápidas')">Rápidas</button>
+                    <button class="filter-pill" onclick="setRecipeFilter('Desayuno')">Desayunos</button>
+                    <button class="filter-pill" onclick="setRecipeFilter('Pollo')">Pollo</button>
+                    <button class="filter-pill" onclick="setRecipeFilter('Ensalada')">Ensaladas</button>
+                </div>
+                <div class="recipes-grid" id="recipes-list-container">
+                    <!-- Generado por JS -->
+                </div>
+            </section>
+
+            <!-- VISTA: GROCERY LIST (LISTA INTERACTIVA) -->
+            <section id="view-grocery" class="view">
+                <div class="hero-section hero-dark">
+                    <h2>Lista de<br>Compras</h2>
+                    <p class="hero-sub" style="color:var(--color-cream)">Calculada con tu Despensa.</p>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat-box">
+                        <span class="stat-label">Comprar</span>
+                        <span class="stat-value" id="stat-needed">0</span>
+                    </div>
+                    <div class="stat-box stat-lime">
+                        <span class="stat-label">Ahorrados</span>
+                        <span class="stat-value" id="stat-saved">0</span>
+                    </div>
+                </div>
+
+                <div class="grocery-list" id="grocery-pending-container">
+                    <!-- Items pendientes -->
+                </div>
+
+                <div class="section-title-bar" style="background-color: var(--color-cream); margin-top: 20px;">
+                    <span>Ya en el Carrito</span>
+                    <i class="ph ph-check-circle"></i>
+                </div>
+                
+                <div class="grocery-list grocery-bought-list" id="grocery-bought-container">
+                    <!-- Items comprados -->
+                </div>
+            </section>
+
+            <!-- VISTA: PANTRY (DESPENSA) -->
+            <section id="view-pantry" class="view">
+                <div class="hero-section">
+                    <h2>Despensa<br>Actual</h2>
+                    <p class="hero-sub">Inventario de lo que ya tienes.</p>
+                </div>
+
+                <div class="section-title-bar">
+                    <span>En Stock</span>
+                    <button class="btn-text-action" onclick="openAddIngredientModal()">+ Añadir</button>
+                </div>
+
+                <div class="pantry-table">
+                    <div class="table-header">
+                        <div class="col-name">ITEM</div>
+                        <div class="col-qty">CANTIDAD</div>
+                        <div class="col-action">EDITAR</div>
+                    </div>
+                    <div id="pantry-list-container">
+                        <!-- Generado por JS (Solo cantidades > 0) -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA SOBREPUESTA: RECIPE DETAIL -->
+            <section id="view-recipe-detail" class="view" style="background-color: var(--color-cream); z-index: 150; position: absolute; top: 0; left: 0; width: 100%; min-height: 100%;">
+                <div class="detail-header">
+                    <button class="btn-back" onclick="closeRecipeDetail()"><i class="ph ph-arrow-left"></i> VOLVER</button>
+                </div>
+                <div id="recipe-detail-content">
+                    <!-- Llenado por JS -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Navegación Inferior -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-target="view-dashboard"><i class="ph ph-house"></i><br>Inicio</a>
+            <a href="#" class="nav-item" data-target="view-planner"><i class="ph ph-calendar-blank"></i><br>Plan</a>
+            <a href="#" class="nav-item" data-target="view-pantry"><i class="ph ph-archive"></i><br>Despensa</a>
+            <a href="#" class="nav-item nav-lime" data-target="view-grocery"><i class="ph ph-shopping-cart"></i><br>Compras</a>
+        </nav>
+    </div>
+
+    <!-- Modales (Ocultos por defecto) -->
+    
+    <!-- Modal: Seleccionar Día para Receta -->
+    <div id="modal-select-day" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>¿Para qué día?</h3>
+                <button class="btn-close" onclick="closeModal('modal-select-day')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body" id="modal-days-list">
+                <!-- Llenado por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Añadir Ingrediente a Despensa -->
+    <div id="modal-add-ingredient" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Añadir Ingrediente</h3>
+                <button class="btn-close" onclick="closeModal('modal-add-ingredient')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <select id="select-new-ingredient" class="brutalist-input">
+                    <!-- Llenado por JS -->
+                </select>
+                <div class="input-group">
+                    <label>Cantidad:</label>
+                    <input type="number" id="input-new-qty" value="1" min="1" class="brutalist-input">
+                </div>
+                <button class="btn-massive btn-lime" onclick="submitAddIngredient()">Añadir a Despensa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Overlay -->
+    <div id="onboarding-overlay" class="modal-overlay" style="z-index: 9999; background: var(--color-dark);">
+        <div class="onboarding-content" style="color: var(--color-cream); text-align: left; padding: 40px; max-width: 400px; width:100%;">
+            <h1 style="font-size: 3.5rem; line-height: 0.9; margin-bottom: 20px; color: var(--color-lime);">Loop<br>Kitchen.</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.8;">Organiza tus comidas. Reduce desperdicios. Compra inteligente.</p>
+            
+            <div class="onboarding-step" style="display:flex; gap:15px; margin-bottom:20px;">
+                <div style="background:var(--color-lime); color:var(--color-dark); width:30px; height:30px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:800; flex-shrink:0;">1</div>
+                <p>Revisa tu despensa y dile a la app qué tienes.</p>
+            </div>
+            <div class="onboarding-step" style="display:flex; gap:15px; margin-bottom:20px;">
+                <div style="background:var(--color-lime); color:var(--color-dark); width:30px; height:30px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:800; flex-shrink:0;">2</div>
+                <p>Arma tu plan semanal eligiendo de nuestro recetario.</p>
+            </div>
+            <div class="onboarding-step" style="display:flex; gap:15px; margin-bottom:40px;">
+                <div style="background:var(--color-lime); color:var(--color-dark); width:30px; height:30px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:800; flex-shrink:0;">3</div>
+                <p>Ve de compras: el loop calculará exactamente qué te falta.</p>
+            </div>
+            
+            <button class="btn-massive btn-lime" onclick="closeOnboarding()">Empezar a Ahorrar <i class="ph ph-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
